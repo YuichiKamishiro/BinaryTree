@@ -1,5 +1,7 @@
 #include <iostream>
 
+#define ENABLE_LOGING 1
+
 template<typename T>
 struct Node {
     T val;
@@ -7,20 +9,38 @@ struct Node {
     Node *left = nullptr;
 
     Node(T val) : val{val} {}
+    ~Node() {
+        if (ENABLE_LOGING) {
+            std::cout << "~Node()\n";
+        }
+    }
 };
 
 template<typename T>
 struct Tree {
     Node<T> *root;
-    int size = 0;
+    int size = 1;
 
     Tree(T val) {
         root = new Node<T>(val);
+    }
+    ~Tree() {
+        deleteNodeRecursive(root);
     }
 
     T getSize() {
        return size; 
     }
+
+    void deleteNodeRecursive(Node<T> *node) {
+        if (node == nullptr) {
+            return;
+        }
+        deleteNodeRecursive(node->left);
+        deleteNodeRecursive(node->right);
+        delete node;
+    }
+
     void insert(T val) {
         Node<T> *bufNode = root;
         while(true) {
@@ -60,10 +80,6 @@ struct Tree {
 
 
 int main() {
-    Tree<int> t(6);
-    t.insert(1);
-    t.insert(3);
-    t.insert(22);
-    t.insert(18);
-    t.print();
+    Tree t(12);
+    t.insert(2);
 }   
