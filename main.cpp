@@ -53,7 +53,7 @@ struct Tree {
                     bufNode = bufNode->left;
                 }
             }
-            if (val > bufNode->val) {
+            else if (val > bufNode->val) {
                 if(bufNode->right == nullptr) {
                     bufNode->right = new Node<T>(val);
                     this->size++;
@@ -61,7 +61,9 @@ struct Tree {
                 } else {
                     bufNode = bufNode->right;
                 }
-            } 
+            } else {
+                break;
+            }
 
         }
     }
