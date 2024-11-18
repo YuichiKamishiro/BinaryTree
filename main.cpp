@@ -1,8 +1,19 @@
 #include <iostream>
+#include <compare>
 
-#define ENABLE_LOGING 1
+#define ENABLE_LOGING 0
 
 template<typename T>
+concept isValid = requires(T a, T b) {
+    std::cout << a;
+    { a < b } -> std::convertible_to<bool>;
+    { a > b } -> std::convertible_to<bool>;
+    { a == b } -> std::convertible_to<bool>;
+    { a <= b } -> std::convertible_to<bool>;
+    { a >= b } -> std::convertible_to<bool>;
+};
+
+template<isValid T>
 struct Node {
     T val;
     Node *right = nullptr;
@@ -83,16 +94,16 @@ struct Tree {
     void print() {
         Node<T> *bufNode = root;
         inorderRecursive(bufNode);
+        std::cout << "\n";
     }
 };
 
 
 int main() {
-    Tree t("123");
-    t.insert("12");
+    Tree t(12);
     
     t.print();
-    std::cout << t.getSize() << "\n";
+    std::cout << "Size: " << t.getSize() << "\n";
     t.clear();
-    std::cout << t.getSize() << "\n";
+    std::cout << "Size: " << t.getSize() << "\n";
 }   
