@@ -28,7 +28,7 @@ struct Tree {
         deleteNodeRecursive(root);
     }
 
-    T getSize() {
+    int getSize() {
        return size; 
     }
 
@@ -88,8 +88,10 @@ struct Tree {
 
 
 int main() {
-    Tree t(12);
-    t.insert(2);
+    Tree t("123");
+    t.insert("12");
+    
+    t.print();
     std::cout << t.getSize() << "\n";
     t.clear();
     std::cout << t.getSize() << "\n";
