@@ -41,6 +41,12 @@ struct Tree {
         delete node;
     }
 
+    void clear() {
+        deleteNodeRecursive(root);
+        root = nullptr;
+        size = 0;
+    }
+
     void insert(T val) {
         Node<T> *bufNode = root;
         while(true) {
@@ -84,4 +90,7 @@ struct Tree {
 int main() {
     Tree t(12);
     t.insert(2);
+    std::cout << t.getSize() << "\n";
+    t.clear();
+    std::cout << t.getSize() << "\n";
 }   
