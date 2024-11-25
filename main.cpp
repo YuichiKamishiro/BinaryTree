@@ -29,12 +29,16 @@ struct Node {
 template <typename T>
 struct Tree {
     Node<T> *root;
-    int size = 1;
+    int size = 0;
 
-    Tree(T val) { root = new Node<T>(val); }
+    Tree(T val) {
+        root = new Node<T>(val);
+        size = 1;
+    }
+
     ~Tree() { deleteNodesRecursive(root); }
 
-    int getSize() { return size; }
+    int getSize() const { return size; }
 
     void deleteNodesRecursive(Node<T> *node) {
         if (node == nullptr) {
@@ -71,27 +75,28 @@ struct Tree {
                     bufNode = bufNode->right;
                 }
             } else {
-                break;
+                break; 
             }
         }
     }
 
     Node<T>* getSuccessor(Node<T> *currentNode) {
         currentNode = currentNode->right;
-        while(currentNode->left != nullptr && currentNode != nullptr) {
+        while(currentNode != nullptr && currentNode->left != nullptr) {
             currentNode = currentNode->left;
         }
         return currentNode;
     }
 
-    Node<T>* deleteNodeRecursive(Node<T> *root, int val) {
+    Node<T>* deleteNodeRecursive(Node<T> *root, T val, bool &deleted) {
         if (root == nullptr) return root;
 
         if (val < root->val) {
-            root->left = deleteNodeRecursive(root->left, val);
+            root->left = deleteNodeRecursive(root->left, val, deleted);
         } else if (val > root->val) {
-            root->right = deleteNodeRecursive(root->left, val);
-        } else {
+            root->right = deleteNodeRecursive(root->right, val, deleted); 
+        } else { 
+            deleted = true; 
             if (root->left == nullptr) {
                 Node<T> *temp = root->right;
                 delete root;
@@ -103,18 +108,23 @@ struct Tree {
                 return temp;
             }
             Node<T> *succ = getSuccessor(root);
-            root->val = succ->val;
-            root->right = deleteNodeRecursive(root->right, succ->val);
+            root->val = succ->val; 
+            root->right = deleteNodeRecursive(root->right, succ->val, deleted); 
         }
 
         return root;
     }
+
     void deleteNode(T x) {
-        root = deleteNodeRecursive(root, x);
-        size--;
+        bool nodeDeleted = false; 
+        root = deleteNodeRecursive(root, x, nodeDeleted);
+        
+        if (nodeDeleted) {
+            size--;
+        }
     }
 
-    void inorderRecursive(Node<T> *node) {
+    void inorderRecursive(Node<T> *node) const {
         if (node != nullptr) {
             inorderRecursive(node->left);
             std::cout << node->val << " ";
@@ -122,13 +132,17 @@ struct Tree {
         }
     }
 
-    void print() {
+    bool empty() const { 
+        return size == 0; 
+    }
+
+    void print() const {
         inorderRecursive(root);
         std::cout << "\n";
     }
 };
 
-int main() {
+void test() {
     Tree<int> t(12);
     t.insert(5);
     t.insert(15);
@@ -139,10 +153,14 @@ int main() {
     t.print();
     std::cout << "Size: " << t.getSize() << "\n";
 
-    t.deleteNode(5);
-    std::cout << "After deleting 5: ";
+    t.deleteNode(222);
+    std::cout << "After attempting to delete 222: ";
     t.print();
     std::cout << "Size: " << t.getSize() << "\n";
+}
+
+int main() {
+    test();
 
     return 0;
 }
