@@ -1,6 +1,5 @@
 #include <iostream>
-
-#define ENABLE_LOGGING 0
+#include <format>
 
 template <typename T>
 concept isValid = requires(T a, T b) {
@@ -20,10 +19,7 @@ struct Node {
 
     Node(T val) : val{val} {}
 
-    ~Node() {
-        if (ENABLE_LOGGING)
-            std::cout << "~Node()\n";
-    }
+    ~Node() {}
 };
 
 template <typename T>
@@ -36,21 +32,21 @@ struct Tree {
         size = 1;
     }
 
-    ~Tree() { deleteNodesRecursive(root); }
+    ~Tree() { clearRecursive(root); }
 
     int getSize() const { return size; }
 
-    void deleteNodesRecursive(Node<T> *node) {
+    void clearRecursive(Node<T> *node) {
         if (node == nullptr) {
             return;
         }
-        deleteNodesRecursive(node->left);
-        deleteNodesRecursive(node->right);
+        clearRecursive(node->left);
+        clearRecursive(node->right);
         delete node;
     }
 
     void clear() {
-        deleteNodesRecursive(root);
+        clearRecursive(root);
         root = nullptr;
         size = 0;
     }
@@ -88,13 +84,13 @@ struct Tree {
         return currentNode;
     }
 
-    Node<T>* deleteNodeRecursive(Node<T> *root, T val, bool &deleted) {
+    Node<T>* eraseRecursive(Node<T> *root, T val, bool &deleted) {
         if (root == nullptr) return root;
 
         if (val < root->val) {
-            root->left = deleteNodeRecursive(root->left, val, deleted);
+            root->left = eraseRecursive(root->left, val, deleted);
         } else if (val > root->val) {
-            root->right = deleteNodeRecursive(root->right, val, deleted); 
+            root->right = eraseRecursive(root->right, val, deleted); 
         } else { 
             deleted = true; 
             if (root->left == nullptr) {
@@ -109,15 +105,15 @@ struct Tree {
             }
             Node<T> *succ = getSuccessor(root);
             root->val = succ->val; 
-            root->right = deleteNodeRecursive(root->right, succ->val, deleted); 
+            root->right = eraseRecursive(root->right, succ->val, deleted); 
         }
 
         return root;
     }
 
-    void deleteNode(T x) {
+    void erase(T x) {
         bool nodeDeleted = false; 
-        root = deleteNodeRecursive(root, x, nodeDeleted);
+        root = eraseRecursive(root, x, nodeDeleted);
         
         if (nodeDeleted) {
             size--;
@@ -151,12 +147,12 @@ void test() {
 
     std::cout << "Initial tree: ";
     t.print();
-    std::cout << "Size: " << t.getSize() << "\n";
+    std::cout << std::format("Size: {}\n", t.getSize());
 
-    t.deleteNode(222);
+    t.erase(222);
     std::cout << "After attempting to delete 222: ";
     t.print();
-    std::cout << "Size: " << t.getSize() << "\n";
+    std::cout << std::format("Size: {}\n", t.getSize());
 }
 
 int main() {
